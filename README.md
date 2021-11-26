@@ -30,4 +30,4 @@ npx react-native run-android
 ## Demo
 
 ### Image
-<img width="339" alt="Screen Shot 2021-11-25 at 23 29 36" src="https://user-images.githubusercontent.com/13221820/143531543-ae150a3b-b858-412f-800b-dfe976257bec.png">
+<img width="344" alt="Screen Shot 2021-11-26 at 00 58 04" src="https://user-images.githubusercontent.com/13221820/143539786-c939ed37-6d81-4b59-adab-2f2a86d4972f.png">
