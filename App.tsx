@@ -6,35 +6,55 @@ import {
   Image,
   ScrollView,
   Text,
+  Platform,
 } from 'react-native';
 import {DemoTitle, DemoButton} from './src/index';
+import axios from 'axios';
 
 import * as ImagePicker from './src/helpers';
 
 export default function App() {
   const [response, setResponse] = React.useState<any>(null);
+  const [prediction, setPrediction] = React.useState('');
+  console.log(response);
 
+  React.useEffect(() => {
+    if (response && response.assets && response.assets[0]) {
+      const fd = new FormData();
+      const photo = response?.assets[0];
+
+      fd.append('upload', {
+        name: photo.fileName,
+        type: photo.type,
+        uri:
+          Platform.OS === 'ios' ? photo.uri.replace('file://', '') : photo.uri,
+      });
+      axios
+        .post('https://9d33-186-77-204-28.ngrok.io/predict/fruit', fd)
+        .then(res => setPrediction(`Your image contains a ${res.data}.`));
+    }
+  }, [response]);
   const onButtonPress = React.useCallback((type, options) => {
     if (type === 'capture') {
       ImagePicker.launchCamera(options, setResponse);
     } else {
       ImagePicker.launchImageLibrary(options, setResponse);
     }
+    setPrediction('');
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      {console.log(response)}
       <DemoTitle>🥑 avocad-o-meter - v1.0.0</DemoTitle>
       <ScrollView>
         {response?.assets ? (
           response?.assets.map(({uri}) => (
-            <View key={uri} style={styles.image}>
+            <View key={uri} style={styles.imageContainer}>
               <Image
                 resizeMode="cover"
                 resizeMethod="scale"
-                style={{width: 400, height: 500}}
-                source={{uri: uri}}
+                style={styles.image}
+                source={{uri}}
               />
             </View>
           ))
@@ -52,6 +72,7 @@ export default function App() {
             );
           })}
         </View>
+        <Text style={styles.prediction}>{prediction}</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -63,17 +84,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'aliceblue',
   },
   buttonContainer: {
-    marginVertical: 10,
+    marginVertical: 25,
   },
-  image: {
+  imageContainer: {
     marginVertical: 24,
     alignItems: 'center',
+  },
+  image: {
+    width: 400,
+    height: 500,
+    borderRadius: 15,
   },
   title: {
     fontSize: 30,
     fontWeight: 'bold',
     marginTop: 20,
     textAlign: 'center',
+  },
+  prediction: {
+    marginVertical: 15,
+    fontSize: 30,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontStyle: 'italic',
   },
 });
 
@@ -88,44 +121,20 @@ const actions: Action[] = [
     title: 'Take Photo',
     type: 'capture',
     options: {
+      quality: 1,
       saveToPhotos: true,
       mediaType: 'photo',
       includeBase64: false,
     },
   },
-  {
-    title: 'Choose From Library',
-    type: 'library',
-    options: {
-      maxHeight: 200,
-      maxWidth: 200,
-      selectionLimit: 0,
-      mediaType: 'photo',
-      includeBase64: false,
-    },
-  },
   // {
-  //   title: 'Take Video',
-  //   type: 'capture',
-  //   options: {
-  //     saveToPhotos: true,
-  //     mediaType: 'video',
-  //   },
-  // },
-  // {
-  //   title: 'Select Video',
+  //   title: 'Choose From Library',
   //   type: 'library',
   //   options: {
-  //     selectionLimit: 0,
-  //     mediaType: 'video',
-  //   },
-  // },
-  // {
-  //   title: `Select Image or Video\n(mixed)`,
-  //   type: 'library',
-  //   options: {
-  //     selectionLimit: 0,
-  //     mediaType: 'mixed',
+  //     quality: 1,
+  //     selectionLimit: 1,
+  //     mediaType: 'photo',
+  //     includeBase64: false,
   //   },
   // },
 ];

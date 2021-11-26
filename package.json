@@ -1,5 +1,6 @@
 {
   "name": "sgapp",
+  "author": "Martin Larios",
   "version": "0.0.1",
   "private": true,
   "scripts": {
