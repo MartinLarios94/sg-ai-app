@@ -14,7 +14,7 @@ export function DemoButton({
       onPress={onPress}
       style={({pressed}) => [
         {
-          backgroundColor: pressed ? 'skyblue' : 'steelblue',
+          backgroundColor: pressed ? 'rgb(240, 79, 90)' : 'rgb(240, 79, 103)',
         },
         styles.container,
       ]}>
